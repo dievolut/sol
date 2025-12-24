@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Smartphone, Mail, Instagram, ArrowRight, Share2, Gift, Trophy } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -9,6 +9,7 @@ import confetti from 'canvas-confetti';
 const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScyMjNR0gxD0MzoEuutw1pYBAHLooL2nEhS86k6ttINzsHxhA/formResponse';
 const PHONE_ENTRY_ID = 'entry.1613241403';  // Campo Telefono
 const EMAIL_ENTRY_ID = 'entry.97750440';    // Campo Mail
+const REFERRER_ENTRY_ID = 'entry.1129989351'; // Campo Código de referido
 // ========================================
 
 interface Participant {
@@ -26,6 +27,17 @@ export const RaffleForm = () => {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [participant, setParticipant] = useState<Participant | null>(null);
     const [missionStates, setMissionStates] = useState({ instagram: false });
+    const [referredBy, setReferredBy] = useState<string | null>(null);
+
+    // Capturar código de referido de la URL
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        if (ref) {
+            setReferredBy(ref);
+            console.log('Referido por:', ref);
+        }
+    }, []);
 
     const validatePhone = (num: string) => /^[0-9+() -]{8,}$/.test(num);
 
@@ -54,6 +66,10 @@ export const RaffleForm = () => {
             const formData = new FormData();
             formData.append(PHONE_ENTRY_ID, phone);
             formData.append(EMAIL_ENTRY_ID, email || 'No proporcionado');
+            // Enviar código de quien lo refirió (si existe)
+            if (referredBy) {
+                formData.append(REFERRER_ENTRY_ID, referredBy);
+            }
 
             fetch(GOOGLE_FORM_ACTION_URL, {
                 method: 'POST',
