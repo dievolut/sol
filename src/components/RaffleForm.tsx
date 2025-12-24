@@ -105,7 +105,7 @@ export const RaffleForm = () => {
     };
 
     const handleInstagramFollow = () => {
-        window.open('https://instagram.com/', '_blank');
+        window.open('https://www.instagram.com/sol_remeras/', '_blank');
         if (!missionStates.instagram) {
             setMissionStates(prev => ({ ...prev, instagram: true }));
             if (participant) {
